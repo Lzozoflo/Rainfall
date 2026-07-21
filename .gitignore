@@ -7,3 +7,5 @@ dist/
 *out*
 *subject.pdf
 New*
+
+__pycache__
