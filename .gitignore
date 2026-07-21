@@ -8,4 +8,5 @@ dist/
 *subject.pdf
 New*
 
+.venv
 __pycache__
